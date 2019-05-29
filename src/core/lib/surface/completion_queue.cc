@@ -819,9 +819,7 @@ static void cq_end_op_for_pluck(
 
 static void functor_callback(void* arg, grpc_error* error) {
   auto* functor = static_cast<grpc_experimental_completion_queue_functor*>(arg);
-  functor->functor_run(functor, true);
-  //functor->functor_run(functor, error == GRPC_ERROR_NONE);
-  GRPC_ERROR_UNREF(error);
+  functor->functor_run(functor, error == GRPC_ERROR_NONE);
 }
 
 /* Complete an event on a completion queue of type GRPC_CQ_CALLBACK */
