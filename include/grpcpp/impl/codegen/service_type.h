@@ -28,12 +28,12 @@
 
 namespace grpc_impl {
 
-class Server;
 class CompletionQueue;
 class ServerContext;
 }  // namespace grpc_impl
 namespace grpc {
 
+class Server;
 class ServerInterface;
 
 namespace internal {
@@ -127,8 +127,7 @@ class Service {
   experimental_type experimental() { return experimental_type(this); }
 
   template <class Message>
-  void RequestAsyncUnary(int index, ::grpc_impl::ServerContext* context,
-                         Message* request,
+  void RequestAsyncUnary(int index, ServerContext* context, Message* request,
                          internal::ServerAsyncStreamingInterface* stream,
                          ::grpc_impl::CompletionQueue* call_cq,
                          ::grpc_impl::ServerCompletionQueue* notification_cq,
@@ -268,7 +267,7 @@ class Service {
     return methods_[idx]->handler();
   }
 
-  friend class grpc_impl::Server;
+  friend class Server;
   friend class ServerInterface;
   ServerInterface* server_;
   std::vector<std::unique_ptr<internal::RpcServiceMethod>> methods_;

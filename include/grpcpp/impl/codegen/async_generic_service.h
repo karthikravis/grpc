@@ -44,7 +44,7 @@ class GenericServerContext final : public ::grpc_impl::ServerContext {
   const std::string& host() const { return host_; }
 
  private:
-  friend class grpc_impl::Server;
+  friend class Server;
   friend class grpc::ServerInterface;
 
   void Clear() {
@@ -85,8 +85,8 @@ class AsyncGenericService final {
                    void* tag);
 
  private:
-  friend class grpc_impl::Server;
-  grpc_impl::Server* server_;
+  friend class Server;
+  Server* server_;
 };
 
 #ifndef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -106,7 +106,7 @@ class GenericCallbackServerContext final
   const std::string& host() const { return host_; }
 
  private:
-  friend class ::grpc_impl::Server;
+  friend class Server;
   friend class ::grpc::ServerInterface;
 
   void Clear() {
@@ -141,7 +141,7 @@ class CallbackGenericService {
   }
 
  private:
-  friend class ::grpc_impl::Server;
+  friend class Server;
 
   ::grpc_impl::internal::CallbackBidiHandler<ByteBuffer, ByteBuffer>*
   Handler() {
@@ -152,7 +152,7 @@ class CallbackGenericService {
         });
   }
 
-  grpc_impl::Server* server_{nullptr};
+  Server* server_{nullptr};
 };
 
 #ifndef GRPC_CALLBACK_API_NONEXPERIMENTAL

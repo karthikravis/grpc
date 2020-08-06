@@ -47,7 +47,6 @@ struct grpc_completion_queue;
 namespace grpc_impl {
 
 class Channel;
-class Server;
 template <class R>
 class ClientReader;
 template <class W>
@@ -78,6 +77,7 @@ class ErrorMethodHandler;
 namespace grpc {
 
 class ChannelInterface;
+class Server;
 class ServerBuilder;
 class ServerInterface;
 
@@ -256,7 +256,7 @@ class CompletionQueue : private ::grpc::GrpcLibraryCodegen {
   // Friends for access to server registration lists that enable checking and
   // logging on shutdown
   friend class ::grpc::ServerBuilder;
-  friend class ::grpc_impl::Server;
+  friend class Server;
 
   // Friend synchronous wrappers so that they can access Pluck(), which is
   // a semi-private API geared towards the synchronous implementation.
@@ -446,7 +446,7 @@ class ServerCompletionQueue : public CompletionQueue {
 
   grpc_cq_polling_type polling_type_;
   friend class ::grpc::ServerBuilder;
-  friend class ::grpc_impl::Server;
+  friend class Server;
 };
 
 }  // namespace grpc_impl
