@@ -54,10 +54,12 @@ class CrashTest : public ::testing::Test {
     std::ostringstream addr_stream;
     addr_stream << "localhost:" << port;
     auto addr = addr_stream.str();
+    gpr_log(GPR_ERROR, "KRS: client addr = %s", addr.c_str());
     server_.reset(new SubProcess({
         g_root + "/client_crash_test_server",
         "--address=" + addr,
     }));
+    gpr_log(GPR_ERROR, "KRS: AFTER calling server create..client addr = %s", addr.c_str());
     GPR_ASSERT(server_);
     return grpc::testing::EchoTestService::NewStub(
         grpc::CreateChannel(addr, InsecureChannelCredentials()));
@@ -70,12 +72,15 @@ class CrashTest : public ::testing::Test {
 };
 
 TEST_F(CrashTest, KillBeforeWrite) {
+  gpr_log(GPR_ERROR, "KRS: Test: KillBeforeWrite: 1");
   auto stub = CreateServerAndStub();
 
   EchoRequest request;
   EchoResponse response;
   ClientContext context;
+  gpr_log(GPR_ERROR, "KRS: Test: KillBeforeWrite: before wait_for_ready");
   context.set_wait_for_ready(true);
+  gpr_log(GPR_ERROR, "KRS: Test: KillBeforeWrite: after wait_for_ready");
 
   auto stream = stub->BidiStream(&context);
 
@@ -83,8 +88,10 @@ TEST_F(CrashTest, KillBeforeWrite) {
   EXPECT_TRUE(stream->Write(request));
   EXPECT_TRUE(stream->Read(&response));
   EXPECT_EQ(response.message(), request.message());
+  gpr_log(GPR_ERROR, "KRS: Test: KillBeforeWrite: before KillServer()");
 
   KillServer();
+  gpr_log(GPR_ERROR, "KRS: Test: KillBeforeWrite: after KillServer()");
 
   request.set_message("You should be dead");
   // This may succeed or fail depending on the state of the TCP connection
@@ -93,15 +100,19 @@ TEST_F(CrashTest, KillBeforeWrite) {
   EXPECT_FALSE(stream->Read(&response));
 
   EXPECT_FALSE(stream->Finish().ok());
+  gpr_log(GPR_ERROR, "KRS: Test: KillBeforeWrite: end");
 }
 
 TEST_F(CrashTest, KillAfterWrite) {
+  gpr_log(GPR_ERROR, "KRS: Test: KillAfterWrite: 1");
   auto stub = CreateServerAndStub();
 
   EchoRequest request;
   EchoResponse response;
   ClientContext context;
+  gpr_log(GPR_ERROR, "KRS: Test: KillAfterWrite: before wait_for_ready");
   context.set_wait_for_ready(true);
+  gpr_log(GPR_ERROR, "KRS: Test: KillAfterWrite: after wait_for_ready");
 
   auto stream = stub->BidiStream(&context);
 
@@ -112,13 +123,16 @@ TEST_F(CrashTest, KillAfterWrite) {
 
   request.set_message("I'm going to kill you");
   EXPECT_TRUE(stream->Write(request));
+  gpr_log(GPR_ERROR, "KRS: Test: KillAfterWrite: before KillServer()");
 
   KillServer();
+  gpr_log(GPR_ERROR, "KRS: Test: KillAfterWrite: after KillServer()");
 
   // This may succeed or fail depending on how quick the server was
   stream->Read(&response);
 
   EXPECT_FALSE(stream->Finish().ok());
+  gpr_log(GPR_ERROR, "KRS: Test: KillAfterWrite: end");
 }
 
 }  // namespace

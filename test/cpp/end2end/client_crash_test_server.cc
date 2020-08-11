@@ -60,19 +60,22 @@ class ServiceImpl final : public ::grpc::testing::EchoTestService::Service {
 };
 
 void RunServer() {
+  std::cout << "KRS: RunServer() 1 on: " << FLAGS_address << std::endl;
   ServiceImpl service;
 
   ServerBuilder builder;
   builder.AddListeningPort(FLAGS_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
+  std::cout << "KRS: RunServer() 2 on: " << FLAGS_address << std::endl;
   std::unique_ptr<Server> server(builder.BuildAndStart());
-  std::cout << "Server listening on " << FLAGS_address << std::endl;
+  std::cout << "KRS: Server up and listening on " << FLAGS_address << std::endl;
   server->Wait();
 }
 }  // namespace testing
 }  // namespace grpc
 
 int main(int argc, char** argv) {
+  std::cout << "KRS: Server creeated on: " << FLAGS_address << std::endl;
   grpc::testing::InitTest(&argc, &argv, true);
   grpc::testing::RunServer();
 

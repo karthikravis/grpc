@@ -48,14 +48,16 @@ gpr_subprocess* gpr_subprocess_create(int argc, const char** argv) {
   int pid;
   char** exec_args;
 
-  pid = fork();
-  if (pid == -1) {
+  pid = vfork();
+  if (pid < 0) {
+    gpr_log(GPR_ERROR, "KRS: fork() error: %d", errno);
     return nullptr;
   } else if (pid == 0) {
     exec_args = static_cast<char**>(
         gpr_malloc((static_cast<size_t>(argc) + 1) * sizeof(char*)));
     memcpy(exec_args, argv, static_cast<size_t>(argc) * sizeof(char*));
     exec_args[argc] = nullptr;
+    gpr_log(GPR_ERROR, "KRS: execv called in child process: %s", exec_args[0]);
     execv(exec_args[0], exec_args);
     /* if we reach here, an error has occurred */
     gpr_log(GPR_ERROR, "execv '%s' failed: %s", exec_args[0], strerror(errno));
@@ -64,6 +66,7 @@ gpr_subprocess* gpr_subprocess_create(int argc, const char** argv) {
   } else {
     r = static_cast<gpr_subprocess*>(gpr_zalloc(sizeof(gpr_subprocess)));
     r->pid = pid;
+  gpr_log(GPR_ERROR, "KRS: subprocess create finished successfully!");
     return r;
   }
 }

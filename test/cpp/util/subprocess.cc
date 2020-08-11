@@ -19,6 +19,7 @@
 #include "test/cpp/util/subprocess.h"
 
 #include <vector>
+#include <grpc/support/log.h>
 
 #include "test/core/util/subprocess.h"
 
@@ -29,7 +30,9 @@ static gpr_subprocess* MakeProcess(const std::vector<std::string>& args) {
   for (auto it = args.begin(); it != args.end(); ++it) {
     vargs.push_back(it->c_str());
   }
-  return gpr_subprocess_create(vargs.size(), &vargs[0]);
+  auto ret = gpr_subprocess_create(vargs.size(), &vargs[0]);
+  gpr_log(GPR_ERROR, "KRS: sub process create finished");
+  return ret;
 }
 
 SubProcess::SubProcess(const std::vector<std::string>& args)
